@@ -1,6 +1,6 @@
 <template>
     <router-view />
-    <div class="footer"><bottom-footer></bottom-footer></div>
+    <!-- <div class="footer"><bottom-footer></bottom-footer></div> -->
   <!-- <div id="nav">
     <div><top-header></top-header></div>
     <div><router-link to="/home">Домашняя страница</router-link></div>
@@ -9,13 +9,20 @@
 </template>
 
 <script>
-import TopHeader from "./components/Top-Header";
-import BottomFooter from "./components/Bottom-Footer";
+// import TopHeader from "./components/Top-Header";
+// import BottomFooter from "./components/Bottom-Footer";
+import firebase from "firebase";
 export default {
-  components: {
-    "top-header": TopHeader,
-    "bottom-footer": BottomFooter,
-  },
+  // components: {
+  //   "top-header": TopHeader,
+  //   "bottom-footer": BottomFooter,
+  // },
+  mounted(){
+    if (firebase.auth().currentUser)
+    this.$router.push({ name: "Mainlk" })
+    else
+    this.$router.push({ name: "Home" });
+  }
 };
 </script>
 

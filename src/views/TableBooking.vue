@@ -10,12 +10,17 @@
       <span v-else class="table-isnotbook">{{ table.tableName }}</span>
     </div>
   </div>
+  <div class="footer"><lk-footer></lk-footer></div>
 </template>
 
 <script>
 import axios from "axios";
 import firebase from "firebase";
+import LkFooter from "../components/Lk-Footer";
 export default {
+  components: {
+    LkFooter,
+  },
   data() {
     return {
       url: `https://api.telegram.org/bot1615672366:AAG7wGYt79dWT6FxSdhHbsrjzMg2rZuAX_E/sendMessage?chat_id=-538004402&text=`,
@@ -24,27 +29,29 @@ export default {
   },
   methods: {
     bookTable(table) {
-      firebase
-        .firestore()
-        .collection("Hookah")
-        .doc(`${table.tableName}`)
-        .update({
-          isBook: !table.isBook,
-        })
-        .then(() => {
-          firebase
-            .firestore()
-            .collection("Hookah")
-            .get()
-            .then((snapshot) => {
-              this.tables = [];
-              snapshot.forEach((doc) => {
-                this.tables.push(doc.data());
+      let input = prompt(`На какое время бронируем ${table.tableName}?`);
+      if (input) {
+        firebase
+          .firestore()
+          .collection("Hookah")
+          .doc(`${table.tableName}`)
+          .update({
+            isBook: !table.isBook,
+          })
+          .then(() => {
+            firebase
+              .firestore()
+              .collection("Hookah")
+              .get()
+              .then((snapshot) => {
+                this.tables = [];
+                snapshot.forEach((doc) => {
+                  this.tables.push(doc.data());
+                });
+                console.log(this.tables);
               });
-              console.log(this.tables);
-            });
-        });
-
+          });
+      } else return;
       console.log(table.tableName);
       //Russia Time
       let tzoffset = new Date().getTimezoneOffset() * 60000;
@@ -63,7 +70,11 @@ export default {
         firebase.auth().currentUser.email +
         "%0A" +
         "Время бронирования: " +
-        localISOTime;
+        localISOTime +
+        "%0A" +
+        "На какое время: " +
+        input;
+
 
       axios
         .post(curentBooking, {})
@@ -113,28 +124,28 @@ div {
   .table {
     user-select: none;
     .table--isbook {
-    margin-bottom: 20px;
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    background: chocolate;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid black;
-    opacity: 0.3;
+      margin-bottom: 20px;
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      background: chocolate;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid black;
+      opacity: 0.3;
     }
-    .table-isnotbook{
-    margin-bottom: 20px;
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    background: chocolate;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid black;
-    opacity: 1;
+    .table-isnotbook {
+      margin-bottom: 20px;
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      background: chocolate;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid black;
+      opacity: 1;
     }
   }
 }

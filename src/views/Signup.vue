@@ -12,11 +12,16 @@
       <button type="submit">Зарегистрироваться</button>
     </form>
   </div>
+  <div class="footer"><bottom-footer></bottom-footer></div>
 </template>
 
 <script>
 import firebase from "firebase";
+import BottomFooter from "../components/Bottom-Footer";
 export default {
+  components:{
+    BottomFooter
+  },
   data() {
     return {
       email: "",
@@ -27,11 +32,11 @@ export default {
   methods: {
     async pressed() {
       try {
-        const user = firebase
+        const user = await firebase
           .auth()
           .createUserWithEmailAndPassword(this.email, this.password);
         console.log(user);
-        this.$router.push({ name: "Home" });
+        this.$router.push({ name: "Mainlk" });
       } catch (err) {
         console.log(err);
       }

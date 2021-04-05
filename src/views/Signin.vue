@@ -1,4 +1,5 @@
 <template>
+<router-view />
   <div id="signin">
     <form @submit.prevent="pressed">
       <h2>Вход</h2> 
@@ -16,11 +17,16 @@
     </form>
     <!-- <div class="error" v-if="error">{{error.message}}</div> -->
   </div>
+  <div class="footer"><bottom-footer></bottom-footer></div>
 </template>
 
 <script>
 import firebase from "firebase";
+import BottomFooter from "../components/Bottom-Footer";
 export default {
+  components:{
+    BottomFooter
+  },
   data() {
     return {
       email: "",
@@ -35,7 +41,7 @@ export default {
           .auth()
           .signInWithEmailAndPassword(this.email, this.password);
         console.log(val);
-        this.$router.push({ name: "Home" });
+        this.$router.push({ name: "Mainlk" });
       } catch (er) {
         console.log(er);
       }

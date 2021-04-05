@@ -3,6 +3,8 @@ import Home from '../views/Home'
 import Signin from '../views/Signin'
 import Signup from '../views/Signup'
 import TableBooking from '../views/TableBooking'
+import MainLk from '../views/MainLk'
+import Profile from '../views/Profile'
 
 const routes = [
   {
@@ -24,6 +26,16 @@ const routes = [
     path: '/booking',
     name: 'Booking',
     component: TableBooking
+  },
+  {
+    path:'/mainlk',
+    name: 'Mainlk',
+    component: MainLk
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
   },
   {
     // path: '/about',
