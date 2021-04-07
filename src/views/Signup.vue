@@ -9,6 +9,9 @@
       <div class="passwor">
         <input type="password" v-model="password" placeholder="Пароль" />
       </div>
+      <div class="name">
+        <input type="text" v-model="name" placeholder="ФИО" />
+      </div>
       <button type="submit">Зарегистрироваться</button>
     </form>
   </div>
@@ -19,14 +22,15 @@
 import firebase from "firebase";
 import BottomFooter from "../components/Bottom-Footer";
 export default {
-  components:{
-    BottomFooter
+  components: {
+    BottomFooter,
   },
   data() {
     return {
       email: "",
       password: "",
       error: "",
+      name: "",
     };
   },
   methods: {
@@ -35,6 +39,10 @@ export default {
         const user = await firebase
           .auth()
           .createUserWithEmailAndPassword(this.email, this.password);
+        firebase.firestore().collection("Users").doc(this.email).set({
+          email: this.email,
+          name: this.name,
+        });
         console.log(user);
         this.$router.push({ name: "Mainlk" });
       } catch (err) {
@@ -47,7 +55,7 @@ export default {
 
 <style lang="scss" scoped>
 #signup {
-//   margin-top: 100px;
+  //   margin-top: 100px;
   display: flex;
   justify-content: center;
   form {

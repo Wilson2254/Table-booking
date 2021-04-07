@@ -60,31 +60,51 @@ export default {
         .replace(/T/, " ")
         .replace(/\..+/, "");
 
-      let curentBooking =
-        this.url +
-        "Заказ" +
-        "%0A" +
-        table.tableName +
-        "%0A" +
-        "Email: " +
-        firebase.auth().currentUser.email +
-        "%0A" +
-        "Время бронирования: " +
-        localISOTime +
-        "%0A" +
-        "На какое время: " +
-        input;
-
-
-      axios
-        .post(curentBooking, {})
-        .then(function (response) {
-          console.log(response.headers.date);
-          console.log(firebase.auth().currentUser);
-          // console.log(firebase.firestore().collection('Hookah'));
+      var userEmail;
+      var curentBooking;
+      console.log(userEmail);
+      firebase
+        .firestore()
+        .collection("Users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            userEmail =
+              doc.data().email == firebase.auth().currentUser.email
+                ? doc.data().name
+                : null;
+          });
         })
-        .catch((e) => {
-          console.log(e);
+        .then(() => {
+          curentBooking =
+            this.url +
+            "Заказ" +
+            "%0A" +
+            table.tableName +
+            "%0A" +
+            "ФИО: " +
+            userEmail +
+            "%0A" +
+            "Эл. почта: " +
+            firebase.auth().currentUser.email +
+            "%0A" +
+            "Время бронирования: " +
+            localISOTime +
+            "%0A" +
+            "На какое время: " +
+            input;
+        })
+        .then(() => {
+          axios
+            .post(curentBooking, {})
+            .then(function (response) {
+              console.log(response.headers.date);
+              console.log(firebase.auth().currentUser);
+              // console.log(firebase.firestore().collection('Hookah'));
+            })
+            .catch((e) => {
+              console.log(e);
+            });
         });
     },
   },
@@ -100,16 +120,6 @@ export default {
       // console.log(this.tables);
     });
 
-    // firebase
-    //   .firestore()
-    //   .collection("Hookah")
-    //   .get()
-    //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {
-    //       this.tables.push(doc.data());
-    //     });
-    //     console.log(this.tables);
-    //   });
   },
 };
 </script>

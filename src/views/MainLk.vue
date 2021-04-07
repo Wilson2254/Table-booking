@@ -24,6 +24,7 @@ export default {
   },
   mounted() {
     console.log(firebase.storage().ref());
+    console.log(firebase.auth().currentUser);
     firebase
       .storage()
       .ref("2cd43b_de870a7313e1454da9573de5162b4bd5_mv2_d_1750_1209_s_2.png")

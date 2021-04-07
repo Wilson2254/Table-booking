@@ -1,6 +1,6 @@
 <template>
     <div class="email">Почта: {{email}}</div>
-    <div class="name">Имя: Иванов Иван</div>
+    <div class="name">{{name}}</div>
     <div class="exit" @click="signout">Выйти</div>
     <div class="footer"><lk-footer></lk-footer></div>
 </template>
@@ -14,7 +14,8 @@ export default {
     },
     data(){
         return{
-            email: firebase.auth().currentUser.email
+            email: firebase.auth().currentUser.email,
+            name: null,
         }
     },
     methods:{
@@ -23,6 +24,20 @@ export default {
                 this.$router.push({ name: "Home" });
             });
         }
+    },
+    created(){
+        firebase
+        .firestore()
+        .collection("Users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            this.name =
+              doc.data().email == firebase.auth().currentUser.email
+                ? doc.data().name
+                : null;
+          });
+        })
     }
 }
 </script>
