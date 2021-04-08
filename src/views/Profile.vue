@@ -1,6 +1,7 @@
 <template>
     <div class="email">Почта: {{email}}</div>
     <div class="name">{{name}}</div>
+    <div class="book">Ваша бронь:</div>
     <div class="exit" @click="signout">Выйти</div>
     <div class="footer"><lk-footer></lk-footer></div>
 </template>
@@ -43,9 +44,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .email, .name, .exit{
+    .email, .name, .exit, .book{
         color: white;
         font-size: 30px;
-        
     }
 </style>

@@ -10,6 +10,9 @@
       <span v-else class="table-isnotbook">{{ table.tableName }}</span>
     </div>
   </div>
+  <booking-modal v-if="showModal" @close="showModal = false">
+    <slot>{{currentTabel.tableName}}</slot>
+  </booking-modal>
   <div class="footer"><lk-footer></lk-footer></div>
 </template>
 
@@ -17,20 +20,25 @@
 import axios from "axios";
 import firebase from "firebase";
 import LkFooter from "../components/Lk-Footer";
+import BookingModal from "../components/Booking-Modal"
 export default {
   components: {
-    LkFooter,
+    LkFooter, BookingModal
   },
   data() {
     return {
       url: `https://api.telegram.org/bot1615672366:AAG7wGYt79dWT6FxSdhHbsrjzMg2rZuAX_E/sendMessage?chat_id=-538004402&text=`,
       tables: [],
+      showModal: false,
+      currentTabel: null,
     };
   },
   methods: {
     bookTable(table) {
-      let input = prompt(`На какое время бронируем ${table.tableName}?`);
-      if (input) {
+      this.currentTabel = table;
+      // let input = prompt(`На какое время бронируем ${table.tableName}?`);
+      this.showModal = true;
+      if (false) {
         firebase
           .firestore()
           .collection("Hookah")
@@ -119,6 +127,7 @@ export default {
       });
       // console.log(this.tables);
     });
+    
 
   },
 };

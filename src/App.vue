@@ -32,7 +32,7 @@ body {
 }
 
 #app {
-  background: url("./files/logo.png") 100% no-repeat;
+  // background: url("./files/logo.png") 100% no-repeat;
   height: 100vh;
   background-size: cover;
 }
