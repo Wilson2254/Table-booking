@@ -1,7 +1,10 @@
 <template>
+  <div>
+    <router-link to="/signin">Войти</router-link>
+    <router-link to="/signup">Зарегистрироваться</router-link>
+  </div>
   <!-- <div class="footer"> -->
-  <router-link to="/signin">Войти</router-link>
-  <router-link to="/signup">Зарегистрироваться</router-link>
+
   <!-- </div> -->
 </template>
 

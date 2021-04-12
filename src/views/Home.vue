@@ -23,7 +23,7 @@ export default {
 
 <style lang="scss" scoped>
 div {
-  color: white;
+  // color: white;
 }
 
 .logo{

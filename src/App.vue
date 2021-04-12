@@ -1,6 +1,8 @@
 <template>
-    <router-view />
-    <!-- <div class="footer"><bottom-footer></bottom-footer></div> -->
+  <div><router-view />
+  </div>
+
+  <!-- <div class="footer"><bottom-footer></bottom-footer></div> -->
   <!-- <div id="nav">
     <div><top-header></top-header></div>
     <div><router-link to="/home">Домашняя страница</router-link></div>
@@ -17,12 +19,12 @@ export default {
   //   "top-header": TopHeader,
   //   "bottom-footer": BottomFooter,
   // },
-  mounted(){
+  mounted() {
     if (firebase.auth().currentUser)
     this.$router.push({ name: "Mainlk" })
     else
     this.$router.push({ name: "Home" });
-  }
+  },
 };
 </script>
 

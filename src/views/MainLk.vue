@@ -1,13 +1,15 @@
 <template>
-  <div class="about">
-    <h1>О нас</h1>
-    <img :src="photos" />
+  <div>
+    <div class="about">
+      <h1>О нас</h1>
+      <img :src="photos" />
+    </div>
+    <div class="about">
+      <h1>Новости и акции</h1>
+      <img :src="photos" />
+    </div>
+    <div class="footer"><lk-footer></lk-footer></div>
   </div>
-  <div class="about">
-    <h1>Новости и акции</h1>
-    <img :src="photos" />
-  </div>
-  <div class="footer"><lk-footer></lk-footer></div>
 </template>
 
 <script>
@@ -38,7 +40,7 @@ export default {
 
 <style lang="scss" scoped>
 .about {
-  color: white;
+  // color: white;
   display: flex;
   justify-content: center;
   flex-direction: column;

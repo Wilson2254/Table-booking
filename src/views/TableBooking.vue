@@ -1,29 +1,32 @@
 <template>
   <div>
-    <div
-      class="table"
-      v-for="table in tables"
-      :key="table.id"
-      @click="bookTable(table)"
-    >
-      <span v-if="table.isBook" class="table--isbook">БРОНЬ</span>
-      <span v-else class="table-isnotbook">{{ table.tableName }}</span>
+    <div>
+      <div
+        class="table"
+        v-for="table in tables"
+        :key="table.id"
+        @click="bookTable(table)"
+      >
+        <span v-if="table.isBook" class="table--isbook">БРОНЬ</span>
+        <span v-else class="table-isnotbook">{{ table.tableName }}</span>
+      </div>
     </div>
+    <booking-modal v-if="showModal" @close="showModal = false">
+      <slot>{{ currentTabel.tableName }}</slot>
+    </booking-modal>
+    <div class="footer"><lk-footer></lk-footer></div>
   </div>
-  <booking-modal v-if="showModal" @close="showModal = false">
-    <slot>{{currentTabel.tableName}}</slot>
-  </booking-modal>
-  <div class="footer"><lk-footer></lk-footer></div>
 </template>
 
 <script>
 import axios from "axios";
 import firebase from "firebase";
 import LkFooter from "../components/Lk-Footer";
-import BookingModal from "../components/Booking-Modal"
+import BookingModal from "../components/Booking-Modal";
 export default {
   components: {
-    LkFooter, BookingModal
+    LkFooter,
+    BookingModal,
   },
   data() {
     return {
@@ -34,6 +37,9 @@ export default {
     };
   },
   methods: {
+    // showModal(){
+    //   console.log('FFFFFFff');
+    // },
     bookTable(table) {
       this.currentTabel = table;
       // let input = prompt(`На какое время бронируем ${table.tableName}?`);
@@ -127,8 +133,6 @@ export default {
       });
       // console.log(this.tables);
     });
-    
-
   },
 };
 </script>

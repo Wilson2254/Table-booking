@@ -14,8 +14,8 @@
       </div>
       <button type="submit">Зарегистрироваться</button>
     </form>
+    <div class="footer"><bottom-footer></bottom-footer></div>
   </div>
-  <div class="footer"><bottom-footer></bottom-footer></div>
 </template>
 
 <script>

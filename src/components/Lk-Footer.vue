@@ -1,7 +1,9 @@
 <template>
+  <div>
     <router-link to="/booking">Столики</router-link>
     <router-link to="/mainlk">Домой</router-link>
     <router-link to="/profile">Профиль</router-link>
+  </div>
 </template>
 
 
