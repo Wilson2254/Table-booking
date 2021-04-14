@@ -11,8 +11,12 @@
         <span v-else class="table-isnotbook">{{ table.tableName }}</span>
       </div>
     </div>
-    <booking-modal v-if="showModal" @close="showModal = false">
-      <slot>{{ currentTabel.tableName }}</slot>
+    <booking-modal
+      v-if="showModal"
+      @close="showModal = false"
+      @makeBook="makeBook"
+    >
+      <slot>{{ currentTable.tableName }}</slot>
     </booking-modal>
     <div class="footer"><lk-footer></lk-footer></div>
   </div>
@@ -33,47 +37,62 @@ export default {
       url: `https://api.telegram.org/bot1615672366:AAG7wGYt79dWT6FxSdhHbsrjzMg2rZuAX_E/sendMessage?chat_id=-538004402&text=`,
       tables: [],
       showModal: false,
-      currentTabel: null,
+      currentTable: null,
     };
   },
   methods: {
-    // showModal(){
-    //   console.log('FFFFFFff');
-    // },
-    bookTable(table) {
-      this.currentTabel = table;
-      // let input = prompt(`На какое время бронируем ${table.tableName}?`);
-      this.showModal = true;
-      if (false) {
-        firebase
-          .firestore()
-          .collection("Hookah")
-          .doc(`${table.tableName}`)
-          .update({
-            isBook: !table.isBook,
-          })
-          .then(() => {
-            firebase
-              .firestore()
-              .collection("Hookah")
-              .get()
-              .then((snapshot) => {
-                this.tables = [];
-                snapshot.forEach((doc) => {
-                  this.tables.push(doc.data());
-                });
-                console.log(this.tables);
-              });
-          });
-      } else return;
-      console.log(table.tableName);
+    makeBook(people, time) {
+      console.log(people, time);
+      let bookingTables;
+      firebase
+        .firestore()
+        .collection("Users")
+        .doc(`${firebase.auth().currentUser.email}`)
+        .get()
+        .then((doc) => {
+          let bookInfo = {
+            people: people,
+            time: time,
+            table: this.currentTable.tableName,
+          };
+          bookingTables = doc.data().tables;
+          bookingTables.push(bookInfo);
+          firebase
+            .firestore()
+            .collection("Users")
+            .doc(`${firebase.auth().currentUser.email}`)
+            .update({
+              tables: bookingTables,
+            });
+        });
+
+      firebase;
+      //     .firestore()
+      //     .collection("Hookah")
+      //     .doc(`${table.tableName}`)
+      //     .update({
+      //       isBook: !table.isBook,
+      //     })
+      //     .then(() => {
+      //       firebase
+      //         .firestore()
+      //         .collection("Hookah")
+      //         .get()
+      //         .then((snapshot) => {
+      //           this.tables = [];
+      //           snapshot.forEach((doc) => {
+      //             this.tables.push(doc.data());
+      //           });
+      //           console.log(this.tables);
+      //         });
+      //     });
+      // console.log(table.tableName);
       //Russia Time
       let tzoffset = new Date().getTimezoneOffset() * 60000;
       let localISOTime = new Date(Date.now() - tzoffset)
         .toISOString()
         .replace(/T/, " ")
         .replace(/\..+/, "");
-
       var userEmail;
       var curentBooking;
       console.log(userEmail);
@@ -92,21 +111,39 @@ export default {
         .then(() => {
           curentBooking =
             this.url +
-            "Заказ" +
+            "\u{203C}" +
+            "Поступило бронирование" +
+            "\u{203C}" +
             "%0A" +
-            table.tableName +
+            "\u{1FA91}" +
+            "Столик: " +
+            this.currentTable.tableName +
+            "\u{1FA91}" +
             "%0A" +
+            "\u{1F9D1}" +
             "ФИО: " +
             userEmail +
+            "\u{1F9D1}" +
             "%0A" +
+            "\u{1F4E7}" +
             "Эл. почта: " +
             firebase.auth().currentUser.email +
+            "\u{1F4E7}" +
             "%0A" +
+            "\u{1F570}" +
             "Время бронирования: " +
             localISOTime +
+            "\u{1F570}" +
             "%0A" +
+            "\u{23F3}" +
             "На какое время: " +
-            input;
+            time +
+            "\u{23F3}" +
+            "%0A" +
+            "\u{1F465}" +
+            "Количество человек: " +
+            people +
+            "\u{1F465}"
         })
         .then(() => {
           axios
@@ -120,6 +157,10 @@ export default {
               console.log(e);
             });
         });
+    },
+    bookTable(table) {
+      this.currentTable = table;
+      this.showModal = true;
     },
   },
 

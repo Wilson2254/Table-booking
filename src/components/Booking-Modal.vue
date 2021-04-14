@@ -1,12 +1,28 @@
 <template>
   <div class="bookTable">
     <slot></slot>
-    <input type="text" placeholder="Кол-во людей" />
-    <input type="time" placeholder="Время" />
+    <input type="text" placeholder="Кол-во людей" v-model="people" />
+    <input type="time" placeholder="Время" v-model="time" />
     <button @click="$emit('close')">Закрыть</button>
-    <button @click="$emit('makeBook')">Забронировать</button>
+    <button @click='choosetable'>Забронировать</button>
   </div>
 </template>
+
+<script>
+export default {
+  data(){
+    return{
+      people: null,
+      time: null
+    }
+  },
+  methods:{
+    choosetable(){
+      this.$emit('makeBook', this.people, this.time);
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .bookTable {
