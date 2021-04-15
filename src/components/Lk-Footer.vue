@@ -8,9 +8,16 @@
 
 
 <style lang="scss" scoped>
+div{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 a {
   width: 200px;
   height: 30px;
+  margin: 0 20px;
   background-color: #dcd02d;
   text-decoration: none;
   color: black;

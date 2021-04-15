@@ -16,8 +16,13 @@
       @close="showModal = false"
       @makeBook="makeBook"
     >
-      <slot>{{ currentTable.tableName }}</slot>
+      <slot>{{ currentTable.tableName }}
+
+        <div>Текущие брони:</div>
+        <div></div>
+      </slot>
     </booking-modal>
+    
     <div class="footer"><lk-footer></lk-footer></div>
   </div>
 </template>
@@ -38,6 +43,7 @@ export default {
       tables: [],
       showModal: false,
       currentTable: null,
+      alreadyBooked: '',
     };
   },
   methods: {
@@ -65,8 +71,13 @@ export default {
               tables: bookingTables,
             });
         });
-
-      firebase;
+      
+      // console.log(firebase.firestore().collection('Hookah').doc(`${this.currentTable.table}`).collection('Time'));
+      firebase.firestore().collection('Hookah').doc(`${this.currentTable.tableName}`).collection('Time').doc(`${time}`).set({
+        count: people
+      })
+      
+      // firebase
       //     .firestore()
       //     .collection("Hookah")
       //     .doc(`${table.tableName}`)
@@ -95,7 +106,6 @@ export default {
         .replace(/\..+/, "");
       var userEmail;
       var curentBooking;
-      console.log(userEmail);
       firebase
         .firestore()
         .collection("Users")
@@ -161,6 +171,8 @@ export default {
     bookTable(table) {
       this.currentTable = table;
       this.showModal = true;
+      this.alreadyBooked = table;
+      console.log(this.alreadyBooked);
     },
   },
 
@@ -211,6 +223,10 @@ div {
       border: 2px solid black;
       opacity: 1;
     }
+  }
+
+  .footer>div{
+    justify-content: center;
   }
 }
 </style>
