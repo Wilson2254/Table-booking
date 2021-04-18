@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="booking">
+    <img src="../files/map.jpg" />
     <div>
       <div
         class="table"
@@ -15,14 +16,20 @@
       v-if="showModal"
       @close="showModal = false"
       @makeBook="makeBook"
+      class="bookModal"
     >
-      <slot>{{ currentTable.tableName }}
-
-        <div>Текущие брони:</div>
-        <div></div>
+      <div class="actualBook" v-if="alreadyBooked[0]">
+        ТЕКУЩИЕ БРОНИ:
+        <div v-for="time in alreadyBooked" :key="time">
+          <div>{{ time }}</div>
+        </div>
+      </div>
+      <div v-else class="actualBook">ПОКА ЧТО НА ЭТОТ СТОЛИК НЕТ БРОНИ</div>
+      <slot>
+        <div>СТОЛИК: {{ currentTable.tableName }}</div>
       </slot>
     </booking-modal>
-    
+
     <div class="footer"><lk-footer></lk-footer></div>
   </div>
 </template>
@@ -43,7 +50,7 @@ export default {
       tables: [],
       showModal: false,
       currentTable: null,
-      alreadyBooked: '',
+      alreadyBooked: "",
     };
   },
   methods: {
@@ -71,12 +78,18 @@ export default {
               tables: bookingTables,
             });
         });
-      
+
       // console.log(firebase.firestore().collection('Hookah').doc(`${this.currentTable.table}`).collection('Time'));
-      firebase.firestore().collection('Hookah').doc(`${this.currentTable.tableName}`).collection('Time').doc(`${time}`).set({
-        count: people
-      })
-      
+      firebase
+        .firestore()
+        .collection("Hookah")
+        .doc(`${this.currentTable.tableName}`)
+        .collection("Time")
+        .doc(`${time}`)
+        .set({
+          time: time,
+        });
+
       // firebase
       //     .firestore()
       //     .collection("Hookah")
@@ -153,7 +166,7 @@ export default {
             "\u{1F465}" +
             "Количество человек: " +
             people +
-            "\u{1F465}"
+            "\u{1F465}";
         })
         .then(() => {
           axios
@@ -171,8 +184,18 @@ export default {
     bookTable(table) {
       this.currentTable = table;
       this.showModal = true;
-      this.alreadyBooked = table;
-      console.log(this.alreadyBooked);
+      this.alreadyBooked = firebase
+        .firestore()
+        .collection("Hookah")
+        .doc(table.tableName)
+        .collection("Time")
+        .onSnapshot((snapshot) => {
+          this.alreadyBooked = [];
+          snapshot.forEach((doc) => {
+            this.alreadyBooked.push(doc.data().time);
+          });
+          console.log(this.alreadyBooked);
+        });
     },
   },
 
@@ -191,6 +214,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+* {
+  box-sizing: border-box;
+}
+
 div {
   display: flex;
   // flex-direction: column;
@@ -199,6 +226,8 @@ div {
   justify-content: space-around;
   .table {
     user-select: none;
+    cursor: pointer;
+    z-index: 2;
     .table--isbook {
       margin-bottom: 20px;
       height: 100px;
@@ -225,8 +254,82 @@ div {
     }
   }
 
-  .footer>div{
+  .footer > div {
     justify-content: center;
+  }
+
+  img {
+    width: 1000px;
+    position: absolute;
+    top: 0;
+  }
+
+  .booking {
+    width: 100vw;
+    height: 100vh;
+    background-color: #b3e6fb;
+  }
+
+  .table:nth-child(1) {
+    position: absolute;
+    margin-bottom: 360px;
+    margin-right: 572px;
+    .table-isnotbook {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  .table:nth-child(2) {
+    position: absolute;
+    margin-bottom: 360px;
+    margin-right: 65px;
+    .table-isnotbook {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  .table:nth-child(3) {
+    position: absolute;
+    margin-bottom: 363px;
+    margin-left: 472px;
+    .table-isnotbook {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  .table:nth-child(4) {
+    position: absolute;
+    margin-bottom: 33px;
+    margin-right: 328px;
+    .table-isnotbook {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  .table:nth-child(5) {
+    position: absolute;
+    margin-bottom: 28px;
+    margin-left: 210px;
+    .table-isnotbook {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  .bookModal {
+    font-size: 28px;
+    background-color: white;
+    width: 20%;
+  }
+
+  .actualBook {
+    position: absolute;
+    top: calc(0px + 20px);
+    display: block;
   }
 }
 </style>

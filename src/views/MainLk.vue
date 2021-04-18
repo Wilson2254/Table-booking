@@ -22,7 +22,7 @@
         ></div>
         <div class="caption-top">
           <h2>
-            День рождения заведения<br />
+            Открытие заведения<br />
             <i class="date">Апрель, 2018</i>
           </h2>
           <img :src="photos[photoNumber]" />
@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       photos: [],
-      photoNumber: 1,
+      photoNumber: 0,
     };
   },
   mounted() {
