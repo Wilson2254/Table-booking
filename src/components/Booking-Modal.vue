@@ -1,84 +1,91 @@
 <template>
-  <div class="bookTable">
+  <div id="booking-modal">
     <slot></slot>
+    <div>Дата и время</div>
+    <div>
+      <span><input type="date" placeholder="Дата" v-model="date" /></span>
+      <span class="time"><input type="time" placeholder="Время" v-model="time" /></span>
+    </div>
     <div>Кол-во людей</div>
     <input type="text" placeholder="Кол-во людей" v-model="people" />
-    <div>На какое время</div>
-    <input type="time" placeholder="Время" v-model="time" />
-    <div class="book" @click='choosetable'>Забронировать</div>
+    <div class="book" @click="choosetable">Забронировать</div>
     <div class="close" @click="$emit('close')">Закрыть</div>
-    
   </div>
 </template>
 
 <script>
 export default {
-  data(){
-    return{
+  data() {
+    return {
       people: null,
-      time: null
-    }
+      time: null,
+      date: null,
+    };
   },
-  methods:{
-    choosetable(){
-      this.$emit('makeBook', this.people, this.time);
-    }
-  }
-}
+  methods: {
+    choosetable() {
+      this.$emit("makeBook", this.people, this.time, this.date);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.bookTable {
-  position: fixed;
+#booking-modal {
+  height: 500px;
+  overflow: auto;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
-  z-index: 9999;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: opacity 0.3s ease;
 }
 input {
-  font-size: 16px;
-  padding: 10px;
-  display: block;
-  width: 150px;
-  // border: none;
-  margin-bottom: 20px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 4px;
+  font-family: "Rubik", sans-serif;
+  outline: 0;
+  transition: 0.2s;
 }
 input:focus {
-  outline: none;
+  border-color: #ff9900;
 }
 
-.close, .book{
-  text-decoration: none;
-  display: inline-block;
-  width: 240px;
-  height: 45px;
-  line-height: 45px;
-  border-radius: 45px;
-  margin: 10px 20px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 18px;
-  text-transform: uppercase;
-  text-align: center;
-  letter-spacing: 3px;
-  font-weight: 600;
-  color: #524f4e;
-  background: white;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, .1);
-  transition: .3s;
+.close,
+.book {
+  padding: 12px 10px;
+  border: 0;
+  background: linear-gradient(to right, #ff6600 0%, #ff0000 100%);
+  border-radius: 3px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  letter-spacing: 1px;
+  font-family: "Rubik", sans-serif;
   cursor: pointer;
 }
 
-.close:hover, .book:hover {
-  background: gray;
-  box-shadow: 0 15px 20px gray;
-  color: white;
-  transform: translateY(-7px);
+.time{
+  margin-left: 20px;
 }
 
+::-webkit-scrollbar{
+	width: 10px;
+}
+
+::-webkit-scrollbar-track-piece{
+	background-color: #FFF;
+}
+
+::-webkit-scrollbar-thumb{
+	background-color: #CBCBCB;
+	outline: 2px solid #FFF;
+	outline-offset: -2px;
+	border: .1px solid #B7B7B7;
+}
+
+::-webkit-scrollbar-thumb:hover{
+	background-color: #909090;
+}
 </style>

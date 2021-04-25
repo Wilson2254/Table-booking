@@ -1,22 +1,32 @@
 <template>
-  <div>
-    <router-link to="/signin">Войти</router-link>
-    <router-link to="/signup">Зарегистрироваться</router-link>
+  <div id="footer-main">
+    <router-link to="/signin">Вход в систему</router-link>
+    <router-link to="/signup">Регистрация в системе</router-link>
   </div>
-  <!-- <div class="footer"> -->
-
-  <!-- </div> -->
 </template>
 
 <style lang="scss" scoped>
-a {
-  width: 200px;
-  height: 30px;
-  background-color: #dcd02d;
-  text-decoration: none;
-  color: black;
+#footer-main {
+  position: fixed;
+  width: 440px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  left: 40px;
+  bottom: 30px;
+  a {
+    padding: 12px 10px;
+    border: 0;
+    background: linear-gradient(to right, #ff6600 0%, #ff0000 100%);
+    border-radius: 3px;
+    margin-top: 10px;
+    color: #fff;
+    letter-spacing: 1px;
+    font-family: "Rubik", sans-serif;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  a:first-child{
+    margin-right: 20px;
+  }
 }
 </style>

@@ -1,36 +1,61 @@
 <template>
-  <div class="booking">
-    <img src="../files/map.jpg" />
-    <div>
-      <div
-        class="table"
-        v-for="table in tables"
-        :key="table.id"
-        @click="bookTable(table)"
-      >
-        <span v-if="table.isBook" class="table--isbook">БРОНЬ</span>
-        <span v-else class="table-isnotbook">{{ table.tableName }}</span>
+  <div id="booking">
+    <div class="left">
+      <div class="header">
+        <h2 class="animation a1">Правила бронирования столиков</h2>
+        <ul>
+          <li class="animation a2">
+            Бронирование столика производится строго на 1.5 часа
+          </li>
+          <li class="animation a2">
+            В случае продления необходимо заново оформить бронь или предупредить
+            об этом администратора
+          </li>
+          <li class="animation a2">
+            Запрещена бронь столика, если кол-во человек превышает вместимость
+            столика
+          </li>
+          <li class="animation a2">
+            Администрация вправе снять бронирование вашего столика
+          </li>
+        </ul>
       </div>
+      <booking-modal
+        v-if="showModal"
+        @close="showModal = false"
+        @makeBook="makeBook"
+        class="bookModal"
+      >
+        <slot>
+          <div class="currentBook">Столик: {{ currentTable.tableName }}</div>
+          <div class="currentBookPeople">{{ currentTable.description }}</div>
+        </slot>
+        <div class="actualBook" v-if="alreadyBooked[0]">
+          Текущие брони:
+          <div v-for="time in alreadyBooked" :key="time">
+            <div>{{ time }}</div>
+          </div>
+        </div>
+        <div v-else class="actualBook">Бронь отсутствует</div>
+      </booking-modal>
+      <div class="footer"><lk-footer></lk-footer></div>
     </div>
-    <booking-modal
-      v-if="showModal"
-      @close="showModal = false"
-      @makeBook="makeBook"
-      class="bookModal"
-    >
-      <div class="actualBook" v-if="alreadyBooked[0]">
-        ТЕКУЩИЕ БРОНИ:
-        <div v-for="time in alreadyBooked" :key="time">
-          <div>{{ time }}</div>
+    <div class="right">
+      <div>
+        <div
+          class="table"
+          v-for="table in tables"
+          :key="table.id"
+          @click="bookTable(table)"
+        >
+          <img
+            src="https://images.vexels.com/media/users/3/137666/isolated/preview/9ff738c598fe4b058c1be50ec63272cb-isometric-home-table-with-chairs-by-vexels.png"
+            alt=""
+          />
+          <span>{{ table.tableName }}</span>
         </div>
       </div>
-      <div v-else class="actualBook">ПОКА ЧТО НА ЭТОТ СТОЛИК НЕТ БРОНИ</div>
-      <slot>
-        <div>СТОЛИК: {{ currentTable.tableName }}</div>
-      </slot>
-    </booking-modal>
-
-    <div class="footer"><lk-footer></lk-footer></div>
+    </div>
   </div>
 </template>
 
@@ -54,8 +79,7 @@ export default {
     };
   },
   methods: {
-    makeBook(people, time) {
-      console.log(people, time);
+    makeBook(people, time, date) {
       let bookingTables;
       firebase
         .firestore()
@@ -65,7 +89,7 @@ export default {
         .then((doc) => {
           let bookInfo = {
             people: people,
-            time: time,
+            time: date + " " + time,
             table: this.currentTable.tableName,
           };
           bookingTables = doc.data().tables;
@@ -79,57 +103,30 @@ export default {
             });
         });
 
-      // console.log(firebase.firestore().collection('Hookah').doc(`${this.currentTable.table}`).collection('Time'));
       firebase
         .firestore()
         .collection("Hookah")
         .doc(`${this.currentTable.tableName}`)
         .collection("Time")
-        .doc(`${time}`)
+        .doc(`${date + " " + time}`)
         .set({
-          time: time,
+          time: date + " " + time,
         });
-
-      // firebase
-      //     .firestore()
-      //     .collection("Hookah")
-      //     .doc(`${table.tableName}`)
-      //     .update({
-      //       isBook: !table.isBook,
-      //     })
-      //     .then(() => {
-      //       firebase
-      //         .firestore()
-      //         .collection("Hookah")
-      //         .get()
-      //         .then((snapshot) => {
-      //           this.tables = [];
-      //           snapshot.forEach((doc) => {
-      //             this.tables.push(doc.data());
-      //           });
-      //           console.log(this.tables);
-      //         });
-      //     });
-      // console.log(table.tableName);
       //Russia Time
       let tzoffset = new Date().getTimezoneOffset() * 60000;
       let localISOTime = new Date(Date.now() - tzoffset)
         .toISOString()
         .replace(/T/, " ")
         .replace(/\..+/, "");
-      var userEmail;
+      var userName;
       var curentBooking;
       firebase
         .firestore()
         .collection("Users")
+        .doc(`${firebase.auth().currentUser.email}`)
         .get()
-        .then((querySnapshot) => {
-          querySnapshot.docs.forEach((doc) => {
-            userEmail =
-              doc.data().email == firebase.auth().currentUser.email
-                ? doc.data().name
-                : null;
-          });
+        .then((item) => {
+          userName = item.data().name;
         })
         .then(() => {
           curentBooking =
@@ -145,7 +142,7 @@ export default {
             "%0A" +
             "\u{1F9D1}" +
             "ФИО: " +
-            userEmail +
+            userName +
             "\u{1F9D1}" +
             "%0A" +
             "\u{1F4E7}" +
@@ -160,6 +157,8 @@ export default {
             "%0A" +
             "\u{23F3}" +
             "На какое время: " +
+            date +
+            " " +
             time +
             "\u{23F3}" +
             "%0A" +
@@ -174,7 +173,6 @@ export default {
             .then(function (response) {
               console.log(response.headers.date);
               console.log(firebase.auth().currentUser);
-              // console.log(firebase.firestore().collection('Hookah'));
             })
             .catch((e) => {
               console.log(e);
@@ -194,7 +192,6 @@ export default {
           snapshot.forEach((doc) => {
             this.alreadyBooked.push(doc.data().time);
           });
-          console.log(this.alreadyBooked);
         });
     },
   },
@@ -207,129 +204,225 @@ export default {
       snapshot.forEach((doc) => {
         this.tables.push(doc.data());
       });
-      // console.log(this.tables);
     });
   },
 };
 </script>
 
 <style lang="scss" scoped>
-* {
-  box-sizing: border-box;
+#booking {
+  display: flex;
+  height: 100vh;
 }
 
-div {
+.left {
+  overflow: hidden;
   display: flex;
-  // flex-direction: column;
-  align-items: center;
   flex-wrap: wrap;
-  justify-content: space-around;
-  .table {
-    user-select: none;
-    cursor: pointer;
-    z-index: 2;
-    .table--isbook {
-      margin-bottom: 20px;
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      background: chocolate;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 2px solid black;
-      opacity: 0.3;
-    }
-    .table-isnotbook {
-      margin-bottom: 20px;
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      background: chocolate;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 2px solid black;
-      opacity: 1;
-    }
-  }
+  flex-direction: column;
+  justify-content: flex-start;
+  animation-name: left;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+  animation-delay: 1s;
+}
 
-  .footer > div {
-    justify-content: center;
-  }
-
-  img {
-    width: 1000px;
-    position: absolute;
-    top: 0;
-  }
-
-  .booking {
-    width: 100vw;
-    height: 100vh;
-    background-color: #b3e6fb;
-  }
-
+.right {
+  flex: 1;
+  background-color: black;
+  transition: 1s;
+  background-image: url("../files/Map.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   .table:nth-child(1) {
     position: absolute;
-    margin-bottom: 360px;
-    margin-right: 572px;
-    .table-isnotbook {
-      width: 120px;
-      height: 120px;
-    }
+    top: 600px;
+    left: 700px;
   }
-
   .table:nth-child(2) {
     position: absolute;
-    margin-bottom: 360px;
-    margin-right: 65px;
-    .table-isnotbook {
-      width: 120px;
-      height: 120px;
-    }
+    top: 700px;
+    left: 920px;
   }
-
   .table:nth-child(3) {
     position: absolute;
-    margin-bottom: 363px;
-    margin-left: 472px;
-    .table-isnotbook {
-      width: 120px;
-      height: 120px;
-    }
+    top: 730px;
+    left: 1200px;
   }
-
   .table:nth-child(4) {
     position: absolute;
-    margin-bottom: 33px;
-    margin-right: 328px;
-    .table-isnotbook {
-      width: 120px;
-      height: 120px;
-    }
+    top: 500px;
+    left: 1050px;
   }
-
   .table:nth-child(5) {
     position: absolute;
-    margin-bottom: 28px;
-    margin-left: 210px;
-    .table-isnotbook {
-      width: 120px;
-      height: 120px;
+    top: 600px;
+    left: 1350px;
+  }
+  .table {
+    cursor: pointer;
+    &:hover {
+      color: #ff9900;
+      img {
+        width: 215px;
+      }
     }
+    img {
+      width: 200px;
+    }
+    animation-name: move;
+    animation-duration: 0.4s;
+    animation-fill-mode: both;
+    animation-delay: 2s;
   }
-
-  .bookModal {
-    font-size: 28px;
-    background-color: white;
-    width: 20%;
-  }
-
-  .actualBook {
+  span {
     position: absolute;
-    top: calc(0px + 20px);
-    display: block;
+    top: 38%;
+    right: 39%;
+    user-select: none;
   }
+}
+
+.header > h2 {
+  margin: 0;
+  color: #fc5b1b;
+  user-select: none;
+}
+
+.header li {
+  margin-top: 10px;
+  font-weight: normal;
+  font-size: 16px;
+  color: rgb(255, 153, 0);
+}
+
+ul {
+  list-style: none;
+  padding-inline-start: 0px;
+  user-select: none;
+}
+
+.form {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  height: 46px;
+  padding: 0 16px;
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 4px;
+  font-family: "Rubik", sans-serif;
+  outline: 0;
+  transition: 0.2s;
+  margin-top: 20px;
+}
+
+.form-field:focus {
+  border-color: #ff9900;
+}
+
+.form > button {
+  padding: 12px 10px;
+  border: 0;
+  background: linear-gradient(to right, #ff6600 0%, #ff0000 100%);
+  border-radius: 3px;
+  margin-top: 10px;
+  color: #fff;
+  letter-spacing: 1px;
+  font-family: "Rubik", sans-serif;
+}
+
+.animation {
+  animation-name: move;
+  animation-duration: 0.4s;
+  animation-fill-mode: both;
+  animation-delay: 2s;
+}
+
+.a1 {
+  animation-delay: 2s;
+}
+
+.a2 {
+  animation-delay: 2.1s;
+}
+
+.a3 {
+  animation-delay: 2.2s;
+}
+
+.a4 {
+  animation-delay: 2.3s;
+}
+
+.a5 {
+  animation-delay: 0.4s;
+}
+
+.a6 {
+  animation-delay: 2.5s;
+}
+
+@keyframes move {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-40px);
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+@keyframes left {
+  0% {
+    opacity: 0;
+    width: 0;
+  }
+
+  100% {
+    opacity: 1;
+    padding: 20px 40px;
+    width: 440px;
+  }
+}
+
+.footer {
+  animation-name: footer;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+  animation-delay: 2s;
+}
+
+@keyframes footer {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.actualBook {
+  color: #fc5b1b;
+  font-size: 20px;
+}
+
+.currentBook {
+  font-size: 28px;
+  color: rgb(255, 153, 0);
+}
+
+.currentBookPeople {
+  color: rgb(255, 153, 0);
 }
 </style>
