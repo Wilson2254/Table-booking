@@ -5,18 +5,18 @@
         <h2 class="animation a1">Правила бронирования столиков</h2>
         <ul>
           <li class="animation a2">
-            Бронирование столика производится строго на 1.5 часа
+            Бронирование столика производится строго на 2 часа
           </li>
           <li class="animation a2">
             В случае продления необходимо заново оформить бронь или предупредить
-            об этом администратора
+            об этом а дминистратора
           </li>
           <li class="animation a2">
             Запрещена бронь столика, если кол-во человек превышает вместимость
             столика
           </li>
           <li class="animation a2">
-            Администрация вправе снять бронирование вашего столика
+            Администрация вправе снять бронирование Вашего столика
           </li>
         </ul>
       </div>
@@ -27,6 +27,8 @@
         class="bookModal"
       >
         <slot>
+          <div class="errorBook" v-if="errorBook == 2">На это время уже есть бронь</div>
+          <div class="doneBook" v-if="errorBook == 1">Столик забронирован</div>
           <div class="currentBook">Столик: {{ currentTable.tableName }}</div>
           <div class="currentBookPeople">{{ currentTable.description }}</div>
         </slot>
@@ -76,11 +78,31 @@ export default {
       showModal: false,
       currentTable: null,
       alreadyBooked: "",
+      errorBook: 0,
     };
   },
   methods: {
     makeBook(people, time, date) {
-      let bookingTables;
+      let getDate = (string) =>
+        new Date(0, 0, 0, string.split(":")[0], string.split(":")[1]);
+        this.alreadyBooked.forEach((item) => {
+        let different = getDate(item.split(" ")[1]) - getDate(time);
+        let hours = Math.floor((different % 86400000) / 3600000);
+        let result = 0;
+        if (hours < 0) result = Math.abs(hours) - 1;
+        else result = hours;
+        if (date == item.split(" ")[0]) {
+          if (result < 2) this.errorBook = 2;
+          else this.errorBook = 1;
+        }
+        else this.errorBook = 1;
+      });
+
+      if(!this.alreadyBooked.length)
+        this.errorBook = 1;
+
+      if (this.errorBook == 1){
+        let bookingTables;
       firebase
         .firestore()
         .collection("Users")
@@ -91,6 +113,7 @@ export default {
             people: people,
             time: date + " " + time,
             table: this.currentTable.tableName,
+            id: '_' + Math.random().toString(36).substr(2, 9)
           };
           bookingTables = doc.data().tables;
           bookingTables.push(bookInfo);
@@ -110,7 +133,7 @@ export default {
         .collection("Time")
         .doc(`${date + " " + time}`)
         .set({
-          time: date + " " + time,
+          time: date + " " + time
         });
       //Russia Time
       let tzoffset = new Date().getTimezoneOffset() * 60000;
@@ -120,6 +143,7 @@ export default {
         .replace(/\..+/, "");
       var userName;
       var curentBooking;
+      console.log(new Date(time));
       firebase
         .firestore()
         .collection("Users")
@@ -178,8 +202,11 @@ export default {
               console.log(e);
             });
         });
+      }
     },
+    //Отображение существеющей брони на выбранный столик
     bookTable(table) {
+      this.errorBook = 0;
       this.currentTable = table;
       this.showModal = true;
       this.alreadyBooked = firebase
@@ -424,5 +451,20 @@ ul {
 
 .currentBookPeople {
   color: rgb(255, 153, 0);
+}
+
+.errorBook{
+  font-size: 28px;
+  color: #fc5b1b;
+}
+
+.errorBook{
+  font-size: 28px;
+  color: #fc5b1b;
+}
+
+.doneBook{
+  font-size: 28px;
+  color: #41ce00;
 }
 </style>

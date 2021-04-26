@@ -31,7 +31,7 @@
               v-bind:class="{ active: isOpenList }"
               @click="isOpenList = !isOpenList"
             >
-              <span>Моя бронь</span>
+              <span>Моя бронь  <span class="count-tables">({{tables.length}})</span></span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
@@ -48,14 +48,14 @@
           </div>
 
           <div class="title" v-bind:class="{ active: isOpenList }">
-            <p>Моя бронь</p>
+            <p>Моя бронь <span class="count-tables">({{tables.length}})</span></p>
           </div>
         </section>
       </main>
 
       <nav v-bind:class="{ active: isOpenList }">
         <a v-if="!isHaveBook">Бронь отсутствует</a>
-        <a v-for="table in tables" :key="table.time">
+        <a v-for="table in tables" :key="table.id">
           <div class="icon">
             <!-- <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -128,6 +128,19 @@ export default {
             this.isHaveBook = true;
             this.tables = doc.data().tables;
           }
+        });
+      firebase
+        .firestore()
+        .collection("Hookah")
+        .doc(`${table.table}`)
+        .collection("Time")
+        .doc(`${table.time}`)
+        .delete()
+        .then(() => {
+          console.log("Done");
+        })
+        .catch((error) => {
+          console.error("Error", error);
         });
     },
   },
@@ -356,7 +369,7 @@ $twitter: #1da1f2;
       z-index: 10;
       font-family: inherit;
 
-      span {
+      span:not(.count-tables) {
         opacity: 1;
         @include transition(opacity 0.2s);
         transition-delay: 0.4s;
@@ -502,7 +515,7 @@ $twitter: #1da1f2;
     }
   }
   .exit {
-    padding: 10px 10px;
+    padding: 20px 20px;
     color: #ffffff;
     font-size: 16px;
     display: inline-block;
@@ -539,6 +552,11 @@ $twitter: #1da1f2;
     margin-right: 30px;
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 496 496' style='enable-background:new 0 0 496 496;' xml:space='preserve'%3E%3Cg%3E%3Cg%3E%3Cg%3E%3Cpath d='M248,0C111.033,0,0,111.033,0,248s111.033,248,248,248s248-111.033,248-248C495.841,111.099,384.901,0.159,248,0z M248,480C119.87,480,16,376.13,16,248S119.87,16,248,16s232,103.87,232,232C479.859,376.072,376.072,479.859,248,480z'/%3E%3Cpath d='M361.136,134.864c-3.124-3.123-8.188-3.123-11.312,0L248,236.688L146.176,134.864c-3.069-3.178-8.134-3.266-11.312-0.197 c-3.178,3.069-3.266,8.134-0.197,11.312c0.064,0.067,0.13,0.132,0.197,0.197L236.688,248L134.864,349.824 c-3.178,3.07-3.266,8.134-0.196,11.312c3.07,3.178,8.134,3.266,11.312,0.196c0.067-0.064,0.132-0.13,0.196-0.196L248,259.312 l101.824,101.824c3.178,3.07,8.242,2.982,11.312-0.196c2.995-3.1,2.995-8.016,0-11.116L259.312,248l101.824-101.824 C364.259,143.052,364.259,137.988,361.136,134.864z'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3Cg%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .count-tables{
+    color: rgb(65, 206, 0);
+    font-weight: 600;
   }
 }
 </style>

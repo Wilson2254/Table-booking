@@ -59,6 +59,7 @@ export default {
         firebase.firestore().collection("Users").doc(this.email).set({
           email: this.email,
           name: this.name,
+          tables: []
         });
         console.log(user);
         this.$router.push({ name: "Mainlk" });
