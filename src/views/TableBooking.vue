@@ -201,6 +201,10 @@ export default {
             .catch((e) => {
               console.log(e);
             });
+        }).then(() => {
+          setTimeout(() => {
+            this.$router.push({ name: "Profile" });
+          }, 3000);          
         });
       }
     },
